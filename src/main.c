@@ -68,11 +68,16 @@ int	is_valid_args(int argc, char **argv, t_data *data)
 	return (1);
 }
 
-void	*petit_test(void *philo)
+void	*petit_test(void *philo_to_cast)
 {
-	(t_philo *)philo;
+	t_philo	*philo;
+
+	philo = philo_to_cast;
 	printf("Bonjour le suis le philosophe numero %d\n", philo->index);
 	pthread_mutex_unlock(&philo->data->init_philo_lock);
+	pthread_mutex_lock(&philo->data->begin_simulation_lock);
+	printf("Debut de la simulation : philo %d\n", philo->index);
+	pthread_mutex_unlock(&philo->data->begin_simulation_lock);
 	return (NULL);
 }
 
@@ -80,17 +85,14 @@ int main(int argc, char **argv)
 {
 	t_philo	*head;
 	t_data	*data;
-	int		thread_err;
 
-	thread_err = 0;
 	data = malloc(sizeof(t_data));
-	if (!data);
+	if (!data)
 		return (error_handler(1));
 	pthread_mutex_init(&data->init_philo_lock, NULL);
 	if (!is_valid_args(argc, argv, data))
 		return (error_handler(2));
 	start_all_philosophers(&head, data);
 	pthread_mutex_destroy(&data->init_philo_lock);
-	printf("nombre max de threads : %d\n", --i);
 	return (0);
 }

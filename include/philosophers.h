@@ -15,6 +15,7 @@ typedef struct s_data
 	int	time_to_sleep;
 	int	n_of_t_each_philo_must_eat;
 	pthread_mutex_t	init_philo_lock;
+	pthread_mutex_t begin_simulation_lock;
 
 }t_data;
 

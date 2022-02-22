@@ -4,7 +4,7 @@ RM = rm -rf
 
 CFLAGS = -Wall -Wextra -Werror -I./include
 
-PTHREAD_LIB = -lpthread
+PTHREAD_LIB = -pthread
 
 NAME = philo
 
@@ -24,7 +24,7 @@ fclean : clean
 	$(RM) $(NAME)
 
 $(NAME) : $(OBJ)
-	$(CC) -o $(NAME) $(SRC) $(PTHREAD_LIB)
+	$(CC) $(PTHREAD_LIB) -o $(NAME) $(SRC)
 
 re : fclean all
 
