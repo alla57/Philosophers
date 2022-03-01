@@ -6,7 +6,7 @@
 /*   By: alla <alla@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:10:31 by alla              #+#    #+#             */
-/*   Updated: 2022/02/28 23:27:06 by alla             ###   ########.fr       */
+/*   Updated: 2022/02/28 11:28:25 by alla             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,8 +105,8 @@ int main(int argc, char **argv)
 	pthread_mutex_init(&data->eat_lock, NULL);
 	if (!is_valid_args(argc, argv, data))
 		return (error_handler(2));
-	start_all_philosophers(&head, data);
 	monitor(head);
+	start_all_philosophers(&head, data);
 	usleep(1000);
 	pthread_mutex_destroy(&data->init_philo_lock);
 	pthread_mutex_destroy(&data->eat_lock);
