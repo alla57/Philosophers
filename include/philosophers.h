@@ -7,6 +7,7 @@
 # include <stdio.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <sys/time.h>
 
 //	ANSI COLORS
 # define BLK "\e[0;30m"
@@ -37,11 +38,12 @@ typedef struct s_data
 	int	time_to_sleep;
 	int	n_of_t_each_philo_must_eat;
 	int	n_of_philo_have_eaten;
+	int	all_philo_are_alive;
 	pthread_mutex_t	init_philo_lock;
 	pthread_mutex_t begin_simulation_lock;
-	pthread_mutex_t monitor_lock;
 	pthread_mutex_t eat_lock;
 	pthread_mutex_t	print_lock;
+	pthread_mutex_t	time_death_lock;
 
 }t_data;
 
@@ -53,6 +55,7 @@ typedef struct s_philo
 	int				is_eating;
 	int				can_eat;
 	int				is_dead;
+	long int		time_to_die_start;
 	t_data			*data;
 	struct s_philo	*prev;
 	struct s_philo	*next;

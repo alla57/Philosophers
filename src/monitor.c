@@ -1,32 +1,90 @@
 #include "../include/philosophers.h"
 
-void	*countdown(void *philo_to_cast)
+void	is_philo_dead(t_philo *philo)
 {
-	t_philo 	*philo;
-	long int	start_time;
+	struct timeval	time;
+	long int		time_now;
+	long int		time_the_philo_dies;
+
+	gettimeofday(time, NULL);
+	time_now = time.tv_sec * 1000 + time.tv_usec / 1000;
+	pthread_mutex_lock(philo->data->time_death_lock);
+	time_the_philo_dies = philo->time_to_die_start + philo->data->time_to_die;
+	if (time_the_philo_dies >= time_now)
+	{
+		philo->is_dead = 1;
+		philo->all_philo_are_alive = 0;
+	}
+	pthread_mutex_unlock(philo->data->time_death_lock);
+}
+
+void	reset_time_to_die(t_philo *philo)
+{
+	struct timeval	time;
+
+	gettimeofday(time, NULL);
+	pthread_mutex_lock(philo->data->time_death_lock);
+	philo->time_to_die_start = time.tvsec * 1000 + time.tv_usec / 1000;
+	pthread_mutex_unlock(philo->data->time_death_lock);
+}
+
+void	*check_death_philo(void *philo_to_cast)
+{
+	t_philo	*philo;
 
 	philo = philo_to_cast;
-	while ()
-}
-
-void	start_countdown(t_philo *philo)
-{
-	pthread_t	countdown_thread;
-	int			thread_err;
-
-	thread_err = pthread_create(&countdown_thread, NULL, countdown, philo);
-	if (thread_err != 0)
-		return ; //////return erreur
-}
-
-int	special_round(t_philo *philo, int round)
-{
-	if (!is_even(head->n_of_philo) && (round % 3) == 0)
+	while (philo->index < philo->data->n_of_philo)
 	{
-		philo->can_eat = 1;
-		return (1);
+		reset_time_to_death(philo);
+		philo = philo->next;
 	}
-	return (0);
+	reset_time_to_death(philo);
+	philo = philo->next;
+	while (1)
+	{
+		if (is_philo_dead(philo))
+		{
+			do_action(philo, die);
+			break;
+		}
+		else
+			philo = philo->next;
+	}
+	return (NULL);
+}
+
+void	start_countdown_of_death(t_philo *philo)
+{
+	int			thread_err;
+	pthread_t	thread_id;
+
+	thread_err = pthread_create(&thread_id, NULL, check_death_philo, philo);
+	/*if (thread_err != 0)
+		retrun (erreur))*/ //gerer le retour d'erreur
+}
+
+void	make_philos_eat(t_philo *head, int round)
+{
+	t_philo *current_philo;
+	int		is_round_finish;
+
+	current_philo = head->next;
+	is_round_finish = 0;
+	while (!is_round_finish)
+	{
+		if (!is_even(head->n_of_philo) && (round % 3) == 0)
+		{
+			current_philo->can_eat = 1;
+			is_round_finish = 1;
+		}
+		else if (is_even(current_philo->index) && is_even(round))
+			current_philo->can_eat = 1;
+		else if (!is_even(current_philo->index) && !is_even(round) && (round % 3) != 0)
+			current_philo->can_eat = 1;
+		if (current_philo == head)
+			is_round_finish = 1;
+		current_philo = current_philo->next;
+	}
 }
 
 int	all_philo_have_eaten(t_philo *philo)
@@ -59,13 +117,9 @@ void	print_action(t_philo *philo, e_actions action)
 		printf(WHT "%.6d" BLU "  %.3d" GRN "  is eating\n", time_stamp, philo->index);
 	}
 	else if (action == sleep)
-	{
 		printf(WHT "%.6d" BLU "  %.3d" CYN "  is sleeping\n", time_stamp, philo->index);
-	}
 	else if (action == think)
-	{
 		printf(WHT "%.6d" BLU "  %.3d" BLK "  is thinking\n", time_stamp, philo->index);
-	}
 	else if (action == die)
 		printf(WHT "%.6d" BLU "  %.3d" RED "  died\n", time_stamp, philo->index);
 	pthread_mutex_unlock(&data->print_lock);
@@ -88,26 +142,16 @@ void	do_action(t_philo	*philo, e_actions action)
 
 void	monitor(t_philo *head)
 {
-	t_philo	*current_philo;
 	int		round;
 
-	current_philo = head; // on peut mettre current_philo dans le proto de la func direct
 	round = 1;
-	pthread_mutex_unlock(&head->data->monitor_lock);
-	start_coutdown(head);
-	while (1)
+	start_coutdown_of_death(head);
+	while (head->data->all_philo_are_alive)
 	{
+		if (round == 4) /// a voir si on garde ca ou si on trouve mieux
+			round = 1;
 		pthread_mutex_lock(&head->data->eat_lock);
-		while (current_philo != head)
-		{
-			if (special_round(current_philo, round))
-				break;
-			if (is_even(current_philo->index) && is_even(round))
-				current_philo->can_eat = 1;
-			else if (!is_even(current_philo->index) && !is_even(round) && current_philo != head->prev)
-				current_philo->can_eat = 1;
-			current_philo = current_philo->next;
-		}
+		make_philos_eat(head, round);
 		wait_until_they_all_eat(head);
 		++round;
 	}

@@ -73,21 +73,18 @@ void	*petit_test(void *philo_to_cast)
 	t_philo		*me;
 
 	me = philo_to_cast;
-	printf("Bonjour le suis le philosophe numero %d\n", philo->index);
 	pthread_mutex_unlock(&me->data->init_philo_lock);
-	printf("Debut de la simulation : philo %d\n", me->index);
-	pthread_mutex_lock(&me->data->monitor_lock);
-	while(1)
+	while(me->data->all_philo_are_alive)
 	{
 		if (me->can_eat)
 		{
+			reset_time_to_die(me);
 			do_action(me, eat);
+			reset_time_to_die(me);
 			do_action(me, sleep);
 			do_action(me, think);
 			me->can_eat = 0;
 		}
-		if (me->is_dead)
-			break;
 	}
 	return (NULL);
 }
@@ -103,6 +100,7 @@ int main(int argc, char **argv)
 	pthread_mutex_init(&data->print_lock, NULL);
 	pthread_mutex_init(&data->init_philo_lock, NULL);
 	pthread_mutex_init(&data->eat_lock, NULL);
+	pthread_mutex_init(&philo->data->time_death_lock, NULL);
 	if (!is_valid_args(argc, argv, data))
 		return (error_handler(2));
 	start_all_philosophers(&head, data);
@@ -111,5 +109,6 @@ int main(int argc, char **argv)
 	pthread_mutex_destroy(&data->init_philo_lock);
 	pthread_mutex_destroy(&data->eat_lock);
 	pthread_mutex_destroy(&data->print_lock);
+	pthread_mutex_destroy(&philo->data->time_death_lock);
 	return (0);
 }

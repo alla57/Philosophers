@@ -35,6 +35,7 @@ void	create_all_philosophers(t_philo **head, t_data *data)
 
 	index = 1;
 	philo = create_new_philo(index, data);
+	data->all_philo_are_alive = 1;
 	*head = philo;
 	while (++index <= data->n_of_philo)
 	{
