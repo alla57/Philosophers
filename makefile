@@ -10,6 +10,8 @@ NAME = philo
 
 SRC_PATH =	main.c			\
 			create_philo.c	\
+			monitor.c		\
+			utils.c			\
 
 SRC = $(addprefix src/,$(SRC_PATH))
 

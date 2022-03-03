@@ -54,7 +54,6 @@ void	start_all_philosophers(t_philo **head, t_data *data)
 	i = 0;
 	thread_err = 0;
 	philo = *head;
-	pthread_mutex_lock(&data->begin_simulation_lock);
 	while (!thread_err && ++i <= data->n_of_philo)
 	{
 		pthread_mutex_lock(&data->init_philo_lock);
