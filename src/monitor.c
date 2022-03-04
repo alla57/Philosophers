@@ -29,8 +29,11 @@ void	reset_time_to_die(t_philo *philo)
 void	*check_death_philo(void *philo_to_cast)
 {
 	t_philo	*philo;
+	struct timeval	time;
 
 	philo = philo_to_cast;
+	gettimeofday(&time, NULL);
+	philo->data->timestamp_start = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 	while (philo->index < philo->data->n_of_philo)
 	{
 		reset_time_to_die(philo);
@@ -99,31 +102,29 @@ int	all_philo_have_eaten(t_philo *philo, int round)
 void	wait_until_they_all_eat(t_philo *head, int round)
 {
 	while (head->data->all_philo_are_alive && !all_philo_have_eaten(head, round))
-		usleep(100);
+		usleep(10);
 	head->data->n_of_philo_have_eaten = 0;
 }
 
 void	print_action(t_philo *philo, e_actions action)
 {
-	int	time_stamp;
-
-	time_stamp = 0;
 	pthread_mutex_lock(&philo->data->print_lock);
+	refresh_timestamp(philo);
 	if (action == eat)
 	{
-		printf(	WHT "%.6d" BLU "  %.3d" YEL "  has taken a fork\n" \
-				WHT "%.6d" BLU "  %.3d" YEL "  has taken a fork\n" \
-				WHT "%.6d" BLU "  %.3d" GRN "  is eating\n", time_stamp, philo->index, time_stamp, philo->index, time_stamp, philo->index);
+		printf(	WHT "%.6ld" BLU "  %.3d" YEL "  has taken a fork\n" \
+				WHT "%.6ld" BLU "  %.3d" YEL "  has taken a fork\n" \
+				WHT "%.6ld" BLU "  %.3d" GRN "  is eating\n", philo->data->timestamp, philo->index, philo->data->timestamp, philo->index, philo->data->timestamp, philo->index);
 	}
 	else if (action == sleeps)
 	{
-		printf(WHT "%.6d" BLU "  %.3d" CYN "  is sleeping\n", time_stamp, philo->index);
+		printf(WHT "%.6ld" BLU "  %.3d" CYN "  is sleeping\n", philo->data->timestamp, philo->index);
 		++philo->data->n_of_philo_have_eaten;
 	}
 	else if (action == think)
-		printf(WHT "%.6d" BLU "  %.3d" MAG "  is thinking\n", time_stamp, philo->index);
+		printf(WHT "%.6ld" BLU "  %.3d" MAG "  is thinking\n", philo->data->timestamp, philo->index);
 	else if (action == die)
-		printf(WHT "%.6d" BLU "  %.3d" RED "  died\n", time_stamp, philo->index);
+		printf(WHT "%.6ld" BLU "  %.3d" RED "  died\n", philo->data->timestamp, philo->index);
 	pthread_mutex_unlock(&philo->data->print_lock);
 }
 

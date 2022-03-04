@@ -39,6 +39,8 @@ typedef struct s_data
 	int	n_of_t_each_philo_must_eat;
 	int	n_of_philo_have_eaten;
 	int	all_philo_are_alive;
+	long int	timestamp_start;
+	long int	timestamp;
 	pthread_mutex_t	init_philo_lock;
 	pthread_mutex_t begin_simulation_lock;
 	pthread_mutex_t eat_lock;
@@ -87,6 +89,7 @@ void		*print_eat_thread(void *philo_to_cast);
 void		*print_sleep_thread(void *philo_to_cast);
 void		*print_think_thread(void *philo_to_cast);
 void		*print_die_thread(void *philo_to_cast);
+void		refresh_timestamp(t_philo *philo);
 
 
 #endif
