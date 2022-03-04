@@ -6,7 +6,7 @@
 /*   By: alla <alla@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:10:31 by alla              #+#    #+#             */
-/*   Updated: 2022/03/03 10:18:28 by alla             ###   ########.fr       */
+/*   Updated: 2022/03/04 15:12:17 by alla             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,27 +68,24 @@ int	is_valid_args(int argc, char **argv, t_data *data)
 	return (1);
 }
 
-void	*petit_test(void *philo_to_cast)
+void	*philosopher(void *philo_to_cast)
 {
 	t_philo		*me;
 
 	me = philo_to_cast;
-	pthread_mutex_unlock(&me->data->init_philo_lock);
 	while(me->data->all_philo_are_alive)
 	{
 		if (me->can_eat)
 		{
-			// pthread_mutex_lock(&me->data->begin_simulation_lock);
-			// printf("i can eat %d\n", me->index);
-			// pthread_mutex_unlock(&me->data->begin_simulation_lock);
-			// return (NULL);
-			reset_time_to_die(me);
+			// reset_time_to_die(me);
 			do_action(me, eat);
 			reset_time_to_die(me);
 			me->can_eat = 0;
 			do_action(me, sleeps);
 			do_action(me, think);
 		}
+		else
+			usleep(1000);
 	}
 	return (NULL);
 }
@@ -102,19 +99,13 @@ int main(int argc, char **argv)
 	if (!data)
 		return (error_handler(1));
 	pthread_mutex_init(&data->print_lock, NULL);
-	pthread_mutex_init(&data->init_philo_lock, NULL);
-	pthread_mutex_init(&data->eat_lock, NULL);
 	pthread_mutex_init(&data->time_death_lock, NULL);
-	pthread_mutex_init(&data->begin_simulation_lock, NULL);
 	if (!is_valid_args(argc, argv, data))
 		return (error_handler(2));
 	start_all_philosophers(&head, data);
 	monitor(head);
-	usleep(1000);
-	pthread_mutex_destroy(&data->init_philo_lock);
-	pthread_mutex_destroy(&data->eat_lock);
+	//usleep(1000);
 	pthread_mutex_destroy(&data->print_lock);
 	pthread_mutex_destroy(&data->time_death_lock);
-	pthread_mutex_destroy(&data->begin_simulation_lock);
 	return (0);
 }

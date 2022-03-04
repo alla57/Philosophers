@@ -56,6 +56,7 @@ typedef struct s_philo
 	int				can_eat;
 	int				is_dead;
 	long int		time_to_die_start;
+	e_actions		action;
 	t_data			*data;
 	struct s_philo	*prev;
 	struct s_philo	*next;
@@ -68,20 +69,24 @@ void		start_all_philosophers(t_philo **head, t_data *data);
 int			is_valid_number(char *num);
 long long	ft_atoi(const char *s); // Pourquoi long long ?????
 int			is_valid_args(int argc, char **argv, t_data *data);
-void		*petit_test(void *i);
+void		*philosopher(void *i);
 int 		main(int argc, char **argv);
 int			error_handler(int err_code);
 void		monitor(t_philo *head);
 void		do_action(t_philo	*philo, e_actions action);
 void		print_action(t_philo *philo, e_actions action);
-void		wait_until_they_all_eat(t_philo *head);
-int			all_philo_have_eaten(t_philo *philo);
+void		wait_until_they_all_eat(t_philo *head, int round);
+int			all_philo_have_eaten(t_philo *philo, int round);
 void		make_philos_eat(t_philo *head, int round);
 void		start_countdown_of_death(t_philo *philo);
 void		*check_death_philo(void *philo_to_cast);
 void		reset_time_to_die(t_philo *philo);
 int			is_philo_dead(t_philo *philo);
 int			is_even(int nb);
+void		*print_eat_thread(void *philo_to_cast);
+void		*print_sleep_thread(void *philo_to_cast);
+void		*print_think_thread(void *philo_to_cast);
+void		*print_die_thread(void *philo_to_cast);
 
 
 #endif

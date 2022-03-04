@@ -6,7 +6,7 @@
 /*   By: alla <alla@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:10:31 by alla              #+#    #+#             */
-/*   Updated: 2022/03/03 14:19:49 by alla             ###   ########.fr       */
+/*   Updated: 2022/03/04 10:08:15 by alla             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	*petit_test(void *philo_to_cast)
 	t_philo		*me;
 
 	me = philo_to_cast;
-	pthread_mutex_unlock(&me->data->init_philo_lock);
+	// pthread_mutex_unlock(&me->data->init_philo_lock);
 	while(me->data->all_philo_are_alive)
 	{
 		if (me->can_eat)
@@ -82,13 +82,14 @@ void	*petit_test(void *philo_to_cast)
 			// printf("i can eat %d\n", me->index);
 			// pthread_mutex_unlock(&me->data->begin_simulation_lock);
 			// return (NULL);
-			reset_time_to_die(me);
+			// reset_time_to_die(me);
 			do_action(me, eat);
 			reset_time_to_die(me);
 			me->can_eat = 0;
 			do_action(me, sleeps);
 			do_action(me, think);
 		}
+		// usleep(1000);
 	}
 	return (NULL);
 }
