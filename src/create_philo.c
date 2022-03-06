@@ -57,7 +57,7 @@ void	start_all_philosophers(t_philo **head, t_data *data)
 	while (!thread_err && ++i <= data->n_of_philo)
 	{
 		thread_err = pthread_create(&philo->id, NULL, philosopher, philo);
-		pthread_detach(philo->id);
+		// pthread_detach(philo->id);
 		philo = philo->next;
 	}
 }

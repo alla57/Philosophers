@@ -41,7 +41,7 @@ void	*check_death_philo(void *philo_to_cast)
 	}
 	reset_time_to_die(philo);
 	philo = philo->next;
-	while (1)
+	while (philo->data->n_of_t_each_philo_must_eat != 0)
 	{
 		if (is_philo_dead(philo))
 		{
@@ -59,7 +59,10 @@ void	start_countdown_of_death(t_philo *philo)
 {
 	int			thread_err;
 	pthread_t	thread_id;
+	struct timeval	time;
 
+	gettimeofday(&time, NULL);
+	philo->data->timestamp_start = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 	thread_err = pthread_create(&thread_id, NULL, check_death_philo, philo);
 	if (thread_err != 0)
 		return ; //gerer le retour d'erreur
@@ -162,7 +165,8 @@ void	monitor(t_philo *head)
 
 	round = 1;
 	start_countdown_of_death(head);
-	while (head->data->all_philo_are_alive)
+	head->data->n_of_philo_have_eaten = 0;
+	while (head->data->all_philo_are_alive && head->data->n_of_t_each_philo_must_eat != 0)
 	{
 		if (is_even(head->data->n_of_philo) && round == 3)
 			round = 1;
@@ -171,5 +175,7 @@ void	monitor(t_philo *head)
 		make_philos_eat(head, round);
 		wait_until_they_all_eat(head, round);
 		++round;
+		if (((is_even(head->data->n_of_philo) && round == 3) || (!is_even(head->data->n_of_philo) && round == 4)) && head->data->n_of_t_each_philo_must_eat > 0)
+			--head->data->n_of_t_each_philo_must_eat;
 	}
 }

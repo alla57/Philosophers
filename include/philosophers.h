@@ -69,11 +69,11 @@ t_philo		*create_new_philo(int index, t_data *data);
 void		create_all_philosophers(t_philo **head, t_data *data);
 void		start_all_philosophers(t_philo **head, t_data *data);
 int			is_valid_number(char *num);
-long long	ft_atoi(const char *s); // Pourquoi long long ?????
+int			ft_atoi(const char *s); // Pourquoi long long ?????
 int			is_valid_args(int argc, char **argv, t_data *data);
 void		*philosopher(void *i);
 int 		main(int argc, char **argv);
-int			error_handler(int err_code);
+int			error_handler(int err_code, t_data *data);
 void		monitor(t_philo *head);
 void		do_action(t_philo	*philo, e_actions action);
 void		print_action(t_philo *philo, e_actions action);
