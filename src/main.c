@@ -6,7 +6,7 @@
 /*   By: alla <alla@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:10:31 by alla              #+#    #+#             */
-/*   Updated: 2022/03/06 13:07:59 by alla             ###   ########.fr       */
+/*   Updated: 2022/03/06 13:19:54 by alla             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,6 @@ int	main(int argc, char **argv)
 	if (!data)
 		return (error_handler(1, data));
 	pthread_mutex_init(&data->print_lock, NULL);
-	pthread_mutex_init(&data->time_death_lock, NULL);
 	if (!is_valid_args(argc, argv, data))
 		return (error_handler(2, data));
 	if (one_philo(data))
@@ -93,7 +92,6 @@ int	main(int argc, char **argv)
 	start_all_philosophers(&head, data);
 	monitor(head);
 	pthread_mutex_destroy(&data->print_lock);
-	pthread_mutex_destroy(&data->time_death_lock);
 	free_philosophers(head, data);
 	return (0);
 }

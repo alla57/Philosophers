@@ -6,7 +6,7 @@
 /*   By: alla <alla@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/06 13:11:43 by alla              #+#    #+#             */
-/*   Updated: 2022/03/06 13:18:06 by alla             ###   ########.fr       */
+/*   Updated: 2022/03/06 13:20:44 by alla             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ typedef struct s_data
 	long int		timestamp_start;
 	long int		timestamp;
 	pthread_mutex_t	print_lock;
-
 }t_data;
 
 //	PHILO STRUCT TO STOCK EACH PHILOS WITH THEIR INFOS
