@@ -6,7 +6,7 @@
 /*   By: alla <alla@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/06 12:12:00 by alla              #+#    #+#             */
-/*   Updated: 2022/03/06 12:12:01 by alla             ###   ########.fr       */
+/*   Updated: 2022/03/06 13:09:20 by alla             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,13 @@ void	reset_time_to_die(t_philo *philo)
 
 void	*check_death_philo(void *philo_to_cast)
 {
-	t_philo	*philo;
+	t_philo			*philo;
 	struct timeval	time;
 
 	philo = philo_to_cast;
 	gettimeofday(&time, NULL);
-	philo->data->timestamp_start = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
+	philo->data->timestamp_start = ((time.tv_sec * 1000) + \
+	(time.tv_usec / 1000));
 	while (philo->index < philo->data->n_of_philo)
 	{
 		reset_time_to_die(philo);
@@ -58,10 +59,9 @@ void	*check_death_philo(void *philo_to_cast)
 		if (is_philo_dead(philo))
 		{
 			do_action(philo, die);
-			break;
+			break ;
 		}
-		else
-			philo = philo->next;
+		philo = philo->next;
 		usleep(50);
 	}
 	return (NULL);
@@ -69,12 +69,13 @@ void	*check_death_philo(void *philo_to_cast)
 
 void	start_countdown_of_death(t_philo *philo)
 {
-	int			thread_err;
-	pthread_t	thread_id;
+	int				thread_err;
+	pthread_t		thread_id;
 	struct timeval	time;
 
 	gettimeofday(&time, NULL);
-	philo->data->timestamp_start = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
+	philo->data->timestamp_start = ((time.tv_sec * 1000) + \
+	(time.tv_usec / 1000));
 	thread_err = pthread_create(&thread_id, NULL, check_death_philo, philo);
 	if (thread_err != 0)
 		return ;

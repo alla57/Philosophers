@@ -6,7 +6,7 @@
 /*   By: alla <alla@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/06 12:12:03 by alla              #+#    #+#             */
-/*   Updated: 2022/03/06 12:12:04 by alla             ###   ########.fr       */
+/*   Updated: 2022/03/06 13:07:40 by alla             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 int	is_even(int nb)
 {
-	return !(nb % 2);
+	return (!(nb % 2));
 }
 
 int	is_bigger_than_intmax(char *num)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (*num && *num == '0')

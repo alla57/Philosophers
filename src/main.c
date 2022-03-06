@@ -6,7 +6,7 @@
 /*   By: alla <alla@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 13:10:31 by alla              #+#    #+#             */
-/*   Updated: 2022/03/06 12:08:18 by alla             ###   ########.fr       */
+/*   Updated: 2022/03/06 13:07:59 by alla             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ int	is_valid_args(int argc, char **argv, t_data *data)
 	return (1);
 }
 
-int main(int argc, char **argv)
+int	main(int argc, char **argv)
 {
 	t_philo	*head;
 	t_data	*data;

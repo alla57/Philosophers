@@ -6,7 +6,7 @@
 /*   By: alla <alla@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/06 12:11:57 by alla              #+#    #+#             */
-/*   Updated: 2022/03/06 12:11:58 by alla             ###   ########.fr       */
+/*   Updated: 2022/03/06 13:16:52 by alla             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,29 +33,34 @@ void	refresh_timestamp(t_philo *philo)
 	philo->data->timestamp = time_now - philo->data->timestamp_start;
 }
 
-void	print_action(t_philo *philo, e_actions action)
+void	print_action(t_philo *philo, t_actions action)
 {
 	pthread_mutex_lock(&philo->data->print_lock);
 	refresh_timestamp(philo);
 	if (action == eat)
 	{
-		printf(	WHT "%.6ld" BLU "  %.3d" YEL "  has taken a fork\n" \
-				WHT "%.6ld" BLU "  %.3d" YEL "  has taken a fork\n" \
-				WHT "%.6ld" BLU "  %.3d" GRN "  is eating\n", philo->data->timestamp, philo->index, philo->data->timestamp, philo->index, philo->data->timestamp, philo->index);
+		printf(WHT "%.6ld" BLU "  %.3d" YEL "  has taken a fork\n" \
+		WHT "%.6ld" BLU "  %.3d" YEL "  has taken a fork\n" \
+		WHT "%.6ld" BLU "  %.3d" GRN "  is eating\n", philo->data->timestamp, \
+		philo->index, philo->data->timestamp, philo->index, \
+		philo->data->timestamp, philo->index);
 	}
 	else if (action == sleeps)
 	{
-		printf(WHT "%.6ld" BLU "  %.3d" CYN "  is sleeping\n", philo->data->timestamp, philo->index);
+		printf(WHT "%.6ld" BLU "  %.3d" CYN "  is sleeping\n", \
+		philo->data->timestamp, philo->index);
 		++philo->data->n_of_philo_have_eaten;
 	}
 	else if (action == think)
-		printf(WHT "%.6ld" BLU "  %.3d" MAG "  is thinking\n", philo->data->timestamp, philo->index);
+		printf(WHT "%.6ld" BLU "  %.3d" MAG "  is thinking\n", \
+		philo->data->timestamp, philo->index);
 	else if (action == die)
-		printf(WHT "%.6ld" BLU "  %.3d" RED "  died\n", philo->data->timestamp, philo->index);
+		printf(WHT "%.6ld" BLU "  %.3d" RED "  died\n", \
+		philo->data->timestamp, philo->index);
 	pthread_mutex_unlock(&philo->data->print_lock);
 }
 
-void	do_action(t_philo	*philo, e_actions action)
+void	do_action(t_philo	*philo, t_actions action)
 {
 	if (action == eat)
 	{
@@ -78,18 +83,19 @@ void	*philosopher(void *philo_to_cast)
 	t_philo		*me;
 
 	me = philo_to_cast;
-	while(me->data->all_philo_are_alive && me->data->n_of_t_each_philo_must_eat != 0)
+	while (me->data->all_philo_are_alive && \
+	me->data->n_of_t_each_philo_must_eat != 0)
 	{
 		if (me->can_eat)
 		{
 			do_action(me, eat);
 			if (!me->data->all_philo_are_alive)
-				break;
+				break ;
 			reset_time_to_die(me);
 			me->can_eat = 0;
 			do_action(me, sleeps);
 			if (!me->data->all_philo_are_alive)
-				break;
+				break ;
 			do_action(me, think);
 		}
 		else

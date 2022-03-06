@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philosophers.h                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: alla <alla@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/06 13:11:43 by alla              #+#    #+#             */
+/*   Updated: 2022/03/06 13:18:06 by alla             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILOSOPHERS_H
 
 # define PHILOSOPHERS_H
@@ -27,25 +39,21 @@ typedef enum e_actions
 	sleeps,
 	think,
 	die
-}e_actions;
+}t_actions;
 
 //	DATA STRUCT TO STOCK NEEDED DATA
 typedef struct s_data
 {
-	int	n_of_philo;
-	int	time_to_die;
-	int	time_to_eat;
-	int	time_to_sleep;
-	int	n_of_t_each_philo_must_eat;
-	int	n_of_philo_have_eaten;
-	int	all_philo_are_alive;
-	long int	timestamp_start;
-	long int	timestamp;
-	pthread_mutex_t	init_philo_lock;
-	pthread_mutex_t begin_simulation_lock;
-	pthread_mutex_t eat_lock;
+	int				n_of_philo;
+	int				time_to_die;
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				n_of_t_each_philo_must_eat;
+	int				n_of_philo_have_eaten;
+	int				all_philo_are_alive;
+	long int		timestamp_start;
+	long int		timestamp;
 	pthread_mutex_t	print_lock;
-	pthread_mutex_t	time_death_lock;
 
 }t_data;
 
@@ -58,7 +66,7 @@ typedef struct s_philo
 	int				can_eat;
 	int				is_dead;
 	long int		time_to_die_start;
-	e_actions		action;
+	t_actions		action;
 	t_data			*data;
 	struct s_philo	*prev;
 	struct s_philo	*next;
@@ -78,13 +86,13 @@ int			is_bigger_than_intmax(char *num);
 
 //	philos.c functions
 void		*philosopher(void *i);
-void		do_action(t_philo	*philo, e_actions action);
-void		print_action(t_philo *philo, e_actions action);
+void		do_action(t_philo	*philo, t_actions action);
+void		print_action(t_philo *philo, t_actions action);
 int			one_philo(t_data *data);
 void		refresh_timestamp(t_philo *philo);
 
 //	main.c functions
-int 		main(int argc, char **argv);
+int			main(int argc, char **argv);
 int			is_valid_args(int argc, char **argv, t_data *data);
 void		free_philosophers(t_philo *head, t_data *data);
 int			error_handler(int err_code, t_data *data);
