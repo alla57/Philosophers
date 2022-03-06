@@ -64,32 +64,41 @@ typedef struct s_philo
 	struct s_philo	*next;
 }t_philo;
 
+//	create_philo.c functions
 void		add_philo_to_list(t_philo *head, t_philo *new);
 t_philo		*create_new_philo(int index, t_data *data);
 void		create_all_philosophers(t_philo **head, t_data *data);
 void		start_all_philosophers(t_philo **head, t_data *data);
+
+//	utils.c functions functions
 int			is_valid_number(char *num);
-int			ft_atoi(const char *s); // Pourquoi long long ?????
-int			is_valid_args(int argc, char **argv, t_data *data);
+int			ft_atoi(const char *s);
+int			is_even(int nb);
+int			is_bigger_than_intmax(char *num);
+
+//	philos.c functions
 void		*philosopher(void *i);
-int 		main(int argc, char **argv);
-int			error_handler(int err_code, t_data *data);
-void		monitor(t_philo *head);
 void		do_action(t_philo	*philo, e_actions action);
 void		print_action(t_philo *philo, e_actions action);
+int			one_philo(t_data *data);
+void		refresh_timestamp(t_philo *philo);
+
+//	main.c functions
+int 		main(int argc, char **argv);
+int			is_valid_args(int argc, char **argv, t_data *data);
+void		free_philosophers(t_philo *head, t_data *data);
+int			error_handler(int err_code, t_data *data);
+
+//	monitor.c functions
+void		monitor(t_philo *head);
 void		wait_until_they_all_eat(t_philo *head, int round);
 int			all_philo_have_eaten(t_philo *philo, int round);
 void		make_philos_eat(t_philo *head, int round);
+
+//	death_handling.c functions
 void		start_countdown_of_death(t_philo *philo);
 void		*check_death_philo(void *philo_to_cast);
 void		reset_time_to_die(t_philo *philo);
 int			is_philo_dead(t_philo *philo);
-int			is_even(int nb);
-void		*print_eat_thread(void *philo_to_cast);
-void		*print_sleep_thread(void *philo_to_cast);
-void		*print_think_thread(void *philo_to_cast);
-void		*print_die_thread(void *philo_to_cast);
-void		refresh_timestamp(t_philo *philo);
-
 
 #endif

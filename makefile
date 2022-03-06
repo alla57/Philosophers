@@ -8,10 +8,12 @@ PTHREAD_LIB = -pthread
 
 NAME = philo
 
-SRC_PATH =	main.c			\
-			create_philo.c	\
-			monitor.c		\
-			utils.c			\
+SRC_PATH =	main.c				\
+			create_philo.c		\
+			monitor.c			\
+			philos.c			\
+			death_handling.c	\
+			utils.c				\
 
 SRC = $(addprefix src/,$(SRC_PATH))
 

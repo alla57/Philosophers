@@ -5,56 +5,45 @@ int	is_even(int nb)
 	return !(nb % 2);
 }
 
-void	refresh_timestamp(t_philo *philo)
+int	is_bigger_than_intmax(char *num)
 {
-	struct timeval	time;
-	long int		time_now;
+	int i;
 
-	gettimeofday(&time, NULL);
-	time_now = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
-	philo->data->timestamp = time_now - philo->data->timestamp_start;
+	i = 0;
+	while (*num && *num == '0')
+		++num;
+	while (num[i] && num[i] >= '0' && num[i] <= '9')
+		++i;
+	if (i > 10)
+		return (1);
+	if (ft_atoi(num) < 0)
+		return (1);
+	return (0);
 }
 
-void	*print_eat_thread(void *philo_to_cast)
+int	is_valid_number(char *num)
 {
-	t_philo		*philo;
-	e_actions	action;
+	int	i;
 
-	philo = philo_to_cast;
-	action = eat;
-	print_action(philo, action);
-	return (NULL);
+	i = 0;
+	if (is_bigger_than_intmax(num))
+		return (0);
+	while (num[i] && num[i] >= '0' && num[i] <= '9')
+		++i;
+	if (i && !num[i])
+		return (1);
+	return (0);
 }
 
-void	*print_sleep_thread(void *philo_to_cast)
+int	ft_atoi(const char *s)
 {
-	t_philo		*philo;
-	e_actions	action;
+	int	n;
 
-	philo = philo_to_cast;
-	action = sleeps;
-	print_action(philo, action);
-	return (NULL);
-}
-
-void	*print_think_thread(void *philo_to_cast)
-{
-	t_philo		*philo;
-	e_actions	action;
-
-	philo = philo_to_cast;
-	action = think;
-	print_action(philo, action);
-	return (NULL);
-}
-
-void	*print_die_thread(void *philo_to_cast)
-{
-	t_philo		*philo;
-	e_actions	action;
-
-	philo = philo_to_cast;
-	action = die;
-	print_action(philo, action);
-	return (NULL);
+	n = 0;
+	while (*s && *s >= '0' && *s <= '9')
+	{
+		n = 10 * n + (*s - '0');
+		s++;
+	}
+	return (n);
 }
