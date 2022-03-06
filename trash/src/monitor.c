@@ -22,17 +22,18 @@ void	reset_time_to_die(t_philo *philo)
 {
 	struct timeval	time;
 
-	pthread_mutex_lock(&philo->data->time_death_lock);
 	gettimeofday(&time, NULL);
 	philo->time_to_die_start = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
-	pthread_mutex_unlock(&philo->data->time_death_lock);
 }
 
 void	*check_death_philo(void *philo_to_cast)
 {
 	t_philo	*philo;
+	struct timeval	time;
 
 	philo = philo_to_cast;
+	gettimeofday(&time, NULL);
+	philo->data->timestamp_start = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 	while (philo->index < philo->data->n_of_philo)
 	{
 		reset_time_to_die(philo);
@@ -40,7 +41,7 @@ void	*check_death_philo(void *philo_to_cast)
 	}
 	reset_time_to_die(philo);
 	philo = philo->next;
-	while (1)
+	while (philo->data->n_of_t_each_philo_must_eat != 0)
 	{
 		if (is_philo_dead(philo))
 		{
@@ -49,6 +50,7 @@ void	*check_death_philo(void *philo_to_cast)
 		}
 		else
 			philo = philo->next;
+		usleep(50);// a voir si ça fonctionne pas changer la valeur ou faire un thread qui check la mort pour chaque
 	}
 	return (NULL);
 }
@@ -57,10 +59,14 @@ void	start_countdown_of_death(t_philo *philo)
 {
 	int			thread_err;
 	pthread_t	thread_id;
+	struct timeval	time;
 
+	gettimeofday(&time, NULL);
+	philo->data->timestamp_start = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
 	thread_err = pthread_create(&thread_id, NULL, check_death_philo, philo);
 	if (thread_err != 0)
 		return ; //gerer le retour d'erreur
+	pthread_detach(thread_id);
 }
 
 void	make_philos_eat(t_philo *head, int round)
@@ -72,7 +78,7 @@ void	make_philos_eat(t_philo *head, int round)
 	is_round_finish = 0;
 	while (!is_round_finish)
 	{
-		if (!is_even(head->data->n_of_philo) && (round % 3) == 0)
+		if (!is_even(head->data->n_of_philo) && round == 3)
 		{
 			head->prev->can_eat = 1;
 			is_round_finish = 1;
@@ -87,66 +93,70 @@ void	make_philos_eat(t_philo *head, int round)
 	}
 }
 
-int	all_philo_have_eaten(t_philo *philo)
+int	all_philo_have_eaten(t_philo *philo, int round)
 {
 	if (philo->data->n_of_philo_have_eaten == (philo->data->n_of_philo / 2))
 		return (1);
-	else if (!is_even(philo->data->n_of_philo) && philo->index == philo->data->n_of_philo)
+	else if (!is_even(philo->data->n_of_philo) && round == 3 && philo->data->n_of_philo_have_eaten == 1)
 		return (1);
 	return (0);
 }
 
-void	wait_until_they_all_eat(t_philo *head)
+void	wait_until_they_all_eat(t_philo *head, int round)
 {
-	while (head->data->all_philo_are_alive && !all_philo_have_eaten(head))
-		continue;
-	// pthread_mutex_lock(&head->data->eat_lock);
+	while (head->data->all_philo_are_alive && !all_philo_have_eaten(head, round))
+		usleep(10);
 	head->data->n_of_philo_have_eaten = 0;
-	// pthread_mutex_unlock(&head->data->eat_lock);
 }
 
 void	print_action(t_philo *philo, e_actions action)
 {
-	int	time_stamp;
-
-	time_stamp = 0;
 	pthread_mutex_lock(&philo->data->print_lock);
+	refresh_timestamp(philo);
 	if (action == eat)
 	{
-		// ++philo->data->n_of_philo_have_eaten;
-		printf(WHT "%.6d" BLU "  %.3d" YEL "  has taken a fork\n", time_stamp, philo->index);
-		printf(WHT "%.6d" BLU "  %.3d" YEL "  has taken a fork\n", time_stamp, philo->index);
-		printf(WHT "%.6d" BLU "  %.3d" GRN "  is eating\n", time_stamp, philo->index);
+		printf(	WHT "%.6ld" BLU "  %.3d" YEL "  has taken a fork\n" \
+				WHT "%.6ld" BLU "  %.3d" YEL "  has taken a fork\n" \
+				WHT "%.6ld" BLU "  %.3d" GRN "  is eating\n", philo->data->timestamp, philo->index, philo->data->timestamp, philo->index, philo->data->timestamp, philo->index);
 	}
 	else if (action == sleeps)
 	{
-		printf(WHT "%.6d" BLU "  %.3d" CYN "  is sleeping\n", time_stamp, philo->index);
+		printf(WHT "%.6ld" BLU "  %.3d" CYN "  is sleeping\n", philo->data->timestamp, philo->index);
 		++philo->data->n_of_philo_have_eaten;
 	}
 	else if (action == think)
-		printf(WHT "%.6d" BLU "  %.3d" MAG "  is thinking\n", time_stamp, philo->index);
+		printf(WHT "%.6ld" BLU "  %.3d" MAG "  is thinking\n", philo->data->timestamp, philo->index);
 	else if (action == die)
-		printf(WHT "%.6d" BLU "  %.3d" RED "  died\n", time_stamp, philo->index);
+		printf(WHT "%.6ld" BLU "  %.3d" RED "  died\n", philo->data->timestamp, philo->index);
 	pthread_mutex_unlock(&philo->data->print_lock);
 }
 
 void	do_action(t_philo	*philo, e_actions action)
 {
-	print_action(philo, action);
+	// int			thread_err;
+	// pthread_t	thread_id;
+
+	// print_action(philo, action);
+	//philo->action = action;
+	// thread_err = pthread_create(&thread_id, NULL, print_thread, philo);
+	// if (thread_err != 0)
+	// 	return; //gérer l'erreur
 	if (action == eat)
 	{
+		print_action(philo, action);//thread_err = pthread_create(&thread_id, NULL, print_eat_thread, philo);
 		usleep(philo->data->time_to_eat * 1000);
 	}
 	else if (action == sleeps)
 	{
-		// if (all_philo_have_eaten(philo))
-		// {
-		// 	pthread_mutex_unlock(&philo->data->eat_lock);
-		// }
+		print_action(philo, action);//thread_err = pthread_create(&thread_id, NULL, print_sleep_thread, philo);
 		usleep(philo->data->time_to_sleep * 1000);
 	}
-	else if (action == think || action == die)
-		return;
+	else if (action == think)// || action == die)
+		print_action(philo, action);//thread_err = pthread_create(&thread_id, NULL, print_think_thread, philo);
+	else if (action == die)
+		print_action(philo, action);//thread_err = pthread_create(&thread_id, NULL, print_die_thread, philo);
+	// if (thread_err != 0)
+		// return ;
 }
 
 void	monitor(t_philo *head)
@@ -155,13 +165,17 @@ void	monitor(t_philo *head)
 
 	round = 1;
 	start_countdown_of_death(head);
-	while (head->data->all_philo_are_alive)
+	head->data->n_of_philo_have_eaten = 0;
+	while (head->data->all_philo_are_alive && head->data->n_of_t_each_philo_must_eat != 0)
 	{
-		if (round == 7) /// a voir si on garde ca ou si on trouve mieux
+		if (is_even(head->data->n_of_philo) && round == 3)
 			round = 1;
-		// pthread_mutex_lock(&head->data->eat_lock);
+		else if (!is_even(head->data->n_of_philo) && round == 4)
+			round = 1;
 		make_philos_eat(head, round);
-		wait_until_they_all_eat(head);
+		wait_until_they_all_eat(head, round);
 		++round;
+		if (((is_even(head->data->n_of_philo) && round == 3) || (!is_even(head->data->n_of_philo) && round == 4)) && head->data->n_of_t_each_philo_must_eat > 0)
+			--head->data->n_of_t_each_philo_must_eat;
 	}
 }
