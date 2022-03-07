@@ -71,7 +71,8 @@ int	is_valid_args(int argc, char **argv, t_data *data)
 		data->n_of_t_each_philo_must_eat = ft_atoi(argv[i++]);
 	else if (argc == 5 && ++i)
 		data->n_of_t_each_philo_must_eat = -(i / i);
-	if (i != 6 || !data->n_of_philo || !data->time_to_die)
+	if (i != 6 || !data->n_of_philo || !data->time_to_die || \
+	!data->n_of_t_each_philo_must_eat)
 		return (0);
 	return (1);
 }
