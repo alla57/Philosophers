@@ -26,7 +26,7 @@ void	wait_until_they_all_eat(t_philo *head, int round)
 {
 	while (head->data->all_philo_are_alive && \
 	!all_philo_have_eaten(head, round))
-		usleep(10);
+		usleep(100);
 	head->data->n_of_philo_have_eaten = 0;
 }
 
